@@ -1,59 +1,43 @@
-import { useReducer } from "react";
-
-const firstReducer = (state , action) => {
-  switch(action.type){
-    case "minus" : 
-    return {...state,count : state.count - 1 };
-    case "plus" : 
-    return {... state, count : state.count + 1};
-    case "updateKey":
-      return{...state, key : action.payload};
-    default :
-    throw new Error();
-
-}};
-const ACTION = {
-  MINUS: 'minus',
-  PLUS:'plus',
-  UPDATE_KEY:"updateKey",
-}
-
+import { useEffect, useState } from "react";
 
 
 function App() {
-  const [state ,dispatch] = useReducer (firstReducer,{key : "" , count : 0});
-  // const [key, setKey] = useState("");
-  // const [count, setCount] = useState(0);
-  // useEffect( () => {
-  //   console.log("I am use effect hook.");
-  // },[]);
+  const [todos, setTodos] = useState([]);
 
-  return (
-    <div className="App">
-    
+  useEffect((_) => {
+    fetchData();
+   },[]);
 
-     {/* <input type="text"  onChange={(e) => {
-      setKey(e.target.value)
-     }}/> */}
-     {/* <h1> Your key is - {key} </h1> */}
-     {/* <button onClick={() => {
-      setCount((prevCount) => prevCount - 1)
-     }}> - </button> */}
-      {/* <button onClick={() => {
-      setCount((prevCount) => prevCount + 1)
-     }}> + </button> */}
+   const fetchData = async () => {
+    const response =  await fetch("https://jsonplaceholder.typicode.com/todos")
+      const data =  await response.json();
+      setTodos(data);
+      console.log(data);
+   };
 
-     <input type="text" 
-     onChange={(e) => dispatch({type: ACTION.UPDATE_KEY,payload : e.target.value})} />
-     <h1> Your key is - {state.key} </h1>
-     <button onClick={()=> dispatch({type: ACTION.MINUS})}>-</button>
-     <span>{state.count}</span>
+  return(
+  <section>
+    <table>
+     <thead>
+     <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Completed</th>
+      </tr>
+     </thead>
+    <tbody>
+    {todos.map((todos) => (
+     <tr key={todos.id}>
+      <td>{todos.id}</td>
+      <td>{todos.title}</td> 
+      {/* <td>{String(todos.completed)}</td> */}
+      {todos.completed ? <p>Done</p> : <p className="none">None</p>}
+      </tr>
+       ))}
    
-      <button onClick={()=> dispatch({type: ACTION.PLUS})}>+</button>
-
-
-    </div>
-  );
+   </tbody>
+    </table>
+  </section>)
 }
 
 export default App;
