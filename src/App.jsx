@@ -1,42 +1,45 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 
 
 function App() {
-  const [todos, setTodos] = useState([]);
+  const [id, setid] = useState("");
+  const [error,setError] = useState(false);
+  const [todo,setTodo] = useState(undefined);
 
-  useEffect((_) => {
-    fetchData();
-   },[]);
+  const getData = async(e) => {
+    e.preventDefault();
+    if (id < 1){
+      setError(true);
+      setid("");
+      return;}
 
-   const fetchData = async () => {
-    const response =  await fetch("https://jsonplaceholder.typicode.com/todos")
-      const data =  await response.json();
-      setTodos(data);
-      console.log(data);
-   };
+   const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
+   const data = await response.json();
+   setError(false);
+   setTodo(data);
+   setid("");
+  };
+
+   
 
   return(
   <section>
-    <table>
-     <thead>
-     <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Completed</th>
-      </tr>
-     </thead>
-    <tbody>
-    {todos.map((todos) => (
-     <tr key={todos.id}>
-      <td>{todos.id}</td>
-      <td>{todos.title}</td> 
-      {/* <td>{String(todos.completed)}</td> */}
-      {todos.completed ? <p>Done</p> : <p className="none">None</p>}
-      </tr>
-       ))}
-   
-   </tbody>
-    </table>
+    <form  onSubmit={getData}>
+      <input type="number" value={id} onChange={(e) => {
+        setid(e.target.value);}}/>
+        <button type="submit">Get Data
+        </button>
+    </form>
+    <div>
+      { error && <h1>Please enter an vaild id. (example 1, 2, 3, etc ...)</h1>}
+      {todo && (<div>
+        <h1>ID - {todo.id}</h1>
+        <h1>User Id - {todo.userId}</h1>
+        <h1>Title - {todo.title}</h1>
+        <h1>Completed - { todo.completed ? 'Yes' : 'No'}</h1>
+        
+      </div>)}
+    </div>
   </section>)
 }
 
